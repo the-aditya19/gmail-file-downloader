@@ -12,26 +12,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create Folder
+      - name: Create folder
         run: mkdir -p downloaded_files
 
-      - name: Download File
+      - name: Download ZIP
         run: |
-          curl -L "${{ github.event.client_payload.url }}" -o downloaded_files/file
+          curl -L "${{ github.event.client_payload.url }}" \
+          -o downloaded_files/AI-Motion-Toolkit.zip
 
-      - name: Show Files
+      - name: Show files
         run: ls -lah downloaded_files
 
-      - name: Commit File
+      - name: Commit
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
 
           git add downloaded_files/
 
-          git diff --cached --quiet || git commit -m "Downloaded file from email"
+          git diff --cached --quiet || \
+          git commit -m "Add downloaded file"
 
           git push
