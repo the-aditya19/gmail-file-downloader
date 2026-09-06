@@ -4,12 +4,34 @@ on:
   repository_dispatch:
     types: [email_file]
 
+permissions:
+  contents: write
+
 jobs:
-  test:
+  download:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Workflow Started
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Create Folder
+        run: mkdir -p downloaded_files
+
+      - name: Download File
         run: |
-          echo "Hello Aditya"
-          echo "Workflow triggered successfully"
+          curl -L "${{ github.event.client_payload.url }}" -o downloaded_files/file
+
+      - name: Show Files
+        run: ls -lah downloaded_files
+
+      - name: Commit File
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add downloaded_files/
+
+          git diff --cached --quiet || git commit -m "Downloaded file from email"
+
+          git push
